@@ -5,6 +5,7 @@ import Workspace from "./Workspace";
 import CustomerForm from "./CustomerForm";
 import Home from "./Home";
 import Menu from "./Menu";
+import Customize from "./Customize";
 import { restaurant } from "./restaurant";
 import type { User } from "./api";
 
@@ -59,6 +60,7 @@ export default function App() {
         <nav aria-label="Main navigation">
           <a href="#home">Home</a>{" "}
           <a href="#menu">Menu &amp; order</a>
+          {user?.role_name === "customer" && <a href="#cart">Cart</a>}
           <a href="#account">Account</a>{" "}
           {!user && <a href="#register">Register</a>}
           {user?.role_name === "customer" && <a href="#customer">Customer workspace</a>}
@@ -82,6 +84,7 @@ export default function App() {
         {["customer", "staff", "admin"].includes(page) && <Workspace user={user} page={page} />}
         {page === "register" && <CustomerForm />}
         {page === "menu" && <Menu />}
+        {page.startsWith("customize/") && <Customize key={page} id={Number(page.split("/")[1])} user={user} />}
         {page === "profile" && (user?.role_name === "customer"
           ? <CustomerForm key={user.id} profile={user} />
           : <p role="alert">Sign in as a customer to edit your profile.</p>)}
