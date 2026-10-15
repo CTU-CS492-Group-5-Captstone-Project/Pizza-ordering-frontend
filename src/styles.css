@@ -23,3 +23,8 @@ button {
 :focus-visible { outline: 3px solid #0863b3; outline-offset: 4px; }
 .skip-link { position: absolute; top: -10rem; padding: 0.5rem; background: white; color: #242424; }
 .skip-link:focus { top: 0.5rem; }
+section + section { margin-top: 1.5rem; }
+form { display: grid; gap: 0.75rem; max-width: 28rem; }
+input { width: 100%; padding: 0.65rem; font: inherit; border: 1px solid #666; }
+button:disabled { opacity: 0.7; cursor: wait; }
+[role="alert"] { color: #8b1c13; font-weight: 600; }
