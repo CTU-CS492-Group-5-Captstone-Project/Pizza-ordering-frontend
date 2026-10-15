@@ -3,6 +3,8 @@ import { checkHealth } from "./api";
 import Account from "./Account";
 import Workspace from "./Workspace";
 import CustomerForm from "./CustomerForm";
+import Home from "./Home";
+import { restaurant } from "./restaurant";
 import type { User } from "./api";
 
 export default function App() {
@@ -52,9 +54,10 @@ export default function App() {
     <>
       <header>
         <a href="#main" className="skip-link">Skip to content</a>
-        <span>Pizza Restaurant</span>
+        <span>{restaurant.name}</span>
         <nav aria-label="Main navigation">
           <a href="#home">Home</a>{" "}
+          <a href="#menu">Menu &amp; order</a>
           <a href="#account">Account</a>{" "}
           {!user && <a href="#register">Register</a>}
           {user?.role_name === "customer" && <a href="#customer">Customer workspace</a>}
@@ -64,23 +67,20 @@ export default function App() {
         </nav>
       </header>
       <main id="main" tabIndex={-1}>
-        <h1>Online ordering project</h1>
-        <p>
-          Sign in to your account below. Menu browsing, registration,
-          and the cart will be added in the following Sprint 1 steps.
-        </p>
-        <section aria-labelledby="connection-heading">
+        {(page === "" || page === "home") && <Home />}
+        {page === "account" && <section aria-labelledby="connection-heading">
           <h2 id="connection-heading">Service connection</h2>
           <p role="status">{status}</p>
           <button type="button" onClick={() => setAttempt((value) => value + 1)}>
             Check connection again
           </button>
-        </section>
-        <div hidden={page !== "account" && page !== "" && page !== "home"}>
+        </section>}
+        <div hidden={page !== "account"}>
           <Account onUserChange={setUser} />
         </div>
         {["customer", "staff", "admin"].includes(page) && <Workspace user={user} page={page} />}
         {page === "register" && <CustomerForm />}
+        {page === "menu" && <p>Menu browsing is being connected in the next Sprint task.</p>}
         {page === "profile" && (user?.role_name === "customer"
           ? <CustomerForm key={user.id} profile={user} />
           : <p role="alert">Sign in as a customer to edit your profile.</p>)}

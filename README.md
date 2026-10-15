@@ -71,6 +71,12 @@ HTTP browser checks cannot certify hosted Secure-cookie/proxy behavior.
 
 ## Structure and conventions
 
+S1-T12: restaurant content is maintained in `src/restaurant.ts` (description,
+hours, contact details and photo URLs). All contact details are demo placeholders.
+Photos are externally hosted on Unsplash; visitors' browsers contact that service.
+Replace demo information and confirm image rights before using for a real business.
+The Home page links directly to menu/order navigation and does not accept payments.
+
 S1-T15/T16: shared responsive layout/styles apply across account, registration,
 profile and role workspaces. Navigation wraps on narrow screens, controls have
 44px targets, focus is visible, forms have labels and live error/status
