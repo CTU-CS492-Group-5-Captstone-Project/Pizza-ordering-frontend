@@ -111,7 +111,7 @@ export default function Account({ onUserChange }: { onUserChange: (user: User | 
           <button type="submit" disabled={busy}>
             {busy ? "Signing in..." : "Sign in"}
           </button>
-          <p>Public registration will be available in a later Sprint step.</p>
+          <a href="#register">Create a customer account</a>
         </form>
       )}
       {error && <p id="account-error" role="alert">{error}</p>}

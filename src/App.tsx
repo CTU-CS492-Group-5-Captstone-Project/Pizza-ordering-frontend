@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { checkHealth } from "./api";
 import Account from "./Account";
 import Workspace from "./Workspace";
+import CustomerForm from "./CustomerForm";
 import type { User } from "./api";
 
 export default function App() {
@@ -52,6 +53,7 @@ export default function App() {
         <nav aria-label="Main navigation">
           <a href="#home">Home</a>{" "}
           <a href="#account">Account</a>{" "}
+          {!user && <a href="#register">Register</a>}
           {user?.role_name === "customer" && <a href="#customer">Customer workspace</a>}
           {user && ["staff", "administrator"].includes(user.role_name) && <a href="#staff">Staff workspace</a>}
           {user?.role_name === "administrator" && <a href="#admin">Administrator workspace</a>}
@@ -74,6 +76,7 @@ export default function App() {
           <Account onUserChange={setUser} />
         </div>
         {["customer", "staff", "admin"].includes(page) && <Workspace user={user} page={page} />}
+        {page === "register" && <CustomerForm />}
       </main>
     </>
   );

@@ -31,9 +31,13 @@ export async function apiRequest(path: string, options: RequestInit = {}): Promi
     if (response.status === 401 && path !== "/auth/login") {
       dispatchEvent(new CustomEvent("session-expired"));
     }
+    const validation = Array.isArray(detail) ? detail.map((item: unknown) => {
+      if (typeof item !== "object" || item === null || !("loc" in item) || !("msg" in item)) return "Invalid field.";
+      return `${Array.isArray(item.loc) ? item.loc.slice(1).join(".") : "Field"}: ${String(item.msg)}`;
+    }).join(" ") : null;
     throw new ApiError(
       response.status,
-      typeof detail === "string" ? detail : "Please check the form values and try again.",
+      typeof detail === "string" ? detail : validation || "Please check the form values and try again.",
     );
   }
   if (path !== "/auth/csrf" && path !== "/auth/logout") {
@@ -50,7 +54,7 @@ export async function getUser(signal?: AbortSignal): Promise<User> {
   return response.json();
 }
 
-async function csrfToken(): Promise<string> {
+export async function csrfToken(): Promise<string> {
   const response = await request("/auth/csrf");
   const data: unknown = await response.json();
   if (
@@ -58,6 +62,15 @@ async function csrfToken(): Promise<string> {
     !("csrf_token" in data) || typeof data.csrf_token !== "string"
   ) throw new Error("Unexpected security response. Refresh and try again.");
   return data.csrf_token;
+}
+
+export async function mutate(path: string, method: string, body?: unknown): Promise<Response> {
+  const csrf = await csrfToken();
+  return apiRequest(path, {
+    method,
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
 }
 
 export async function login(email: string, password: string): Promise<User> {
