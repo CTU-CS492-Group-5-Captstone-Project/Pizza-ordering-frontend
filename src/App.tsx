@@ -55,6 +55,7 @@ export default function App() {
           <a href="#account">Account</a>{" "}
           {!user && <a href="#register">Register</a>}
           {user?.role_name === "customer" && <a href="#customer">Customer workspace</a>}
+          {user?.role_name === "customer" && <a href="#profile">Profile</a>}
           {user && ["staff", "administrator"].includes(user.role_name) && <a href="#staff">Staff workspace</a>}
           {user?.role_name === "administrator" && <a href="#admin">Administrator workspace</a>}
         </nav>
@@ -77,6 +78,9 @@ export default function App() {
         </div>
         {["customer", "staff", "admin"].includes(page) && <Workspace user={user} page={page} />}
         {page === "register" && <CustomerForm />}
+        {page === "profile" && (user?.role_name === "customer"
+          ? <CustomerForm key={user.id} profile={user} />
+          : <p role="alert">Sign in as a customer to edit your profile.</p>)}
       </main>
     </>
   );

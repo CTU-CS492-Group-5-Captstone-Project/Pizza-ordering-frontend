@@ -18,6 +18,7 @@ export default function CustomerForm({ profile }: { profile?: User }) {
       await mutate(profile ? "/profile" : "/auth/register", profile ? "PUT" : "POST",
         Object.fromEntries(data.entries()));
       setMessage(profile ? "Profile updated." : "Account created. You can now sign in.");
+      if (profile) dispatchEvent(new CustomEvent("profile-updated"));
       if (!profile) form.reset();
     } catch (failure: unknown) {
       setError(failure instanceof Error ? failure.message : "Unable to save account.");

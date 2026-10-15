@@ -13,6 +13,14 @@ export default function Account({ onUserChange }: { onUserChange: (user: User | 
   const [password, setPassword] = useState("");
   useEffect(() => { onUserChange(user); }, [user, onUserChange]);
   useEffect(() => {
+    const refresh = () => {
+      getUser().then(setUser).catch((failure: unknown) =>
+        setError(failure instanceof Error ? failure.message : "Unable to refresh profile."));
+    };
+    addEventListener("profile-updated", refresh);
+    return () => removeEventListener("profile-updated", refresh);
+  }, []);
+  useEffect(() => {
     const expired = () => {
       setUser(null);
       setMessage("Your session expired or is no longer valid. Sign in again.");
