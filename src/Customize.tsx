@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { mutate } from "./api";
 import type { User } from "./api";
-import { money } from "./Menu";
+import { money } from "./money";
 import type { MenuData } from "./Menu";
 import { useResource } from "./useResource";
 

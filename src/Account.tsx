@@ -36,6 +36,7 @@ export default function Account({ onUserChange }: { onUserChange: (user: User | 
       timer = setTimeout(() => {
         setUser(null);
         setMessage("Your session timed out after 15 minutes without server activity. Sign in again.");
+        dispatchEvent(new CustomEvent("session-expired"));
       }, 15 * 60 * 1000);
     };
     schedule();

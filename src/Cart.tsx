@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { mutate } from "./api";
-import { money } from "./Menu";
+import { money } from "./money";
 import { useResource } from "./useResource";
 
 interface CartLine {

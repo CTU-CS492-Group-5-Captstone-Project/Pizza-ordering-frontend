@@ -19,16 +19,22 @@ export class ApiError extends Error {
 }
 
 export async function apiRequest(path: string, options: RequestInit = {}): Promise<Response> {
+  const timeout = AbortSignal.timeout(15000);
   const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
+    signal: options.signal ? AbortSignal.any([options.signal, timeout]) : timeout,
     credentials: "same-origin",
     cache: "no-store",
   });
   if (!response.ok) {
+    if (!response.headers.get("content-type")?.includes("application/json")) {
+      throw new ApiError(response.status, `Service request failed (HTTP ${response.status}). Please try again.`);
+    }
     const data: unknown = await response.json();
     const detail = typeof data === "object" && data !== null && "detail" in data
       ? data.detail : null;
-    if (response.status === 401 && path !== "/auth/login") {
+    if (response.status === 401 && path !== "/auth/login" &&
+        !(path === "/auth/me" && detail === "Sign in to continue.")) {
       dispatchEvent(new CustomEvent("session-expired"));
     }
     const validation = Array.isArray(detail) ? detail.map((item: unknown) => {
@@ -40,7 +46,7 @@ export async function apiRequest(path: string, options: RequestInit = {}): Promi
       typeof detail === "string" ? detail : validation || "Please check the form values and try again.",
     );
   }
-  if (path !== "/auth/csrf" && path !== "/auth/logout") {
+  if (/^\/(?:auth\/(?:me|login)|profile|cart|customers|staff|admin)(?:\/|$)/.test(path)) {
     dispatchEvent(new CustomEvent("session-activity"));
   }
 

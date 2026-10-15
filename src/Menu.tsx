@@ -1,5 +1,6 @@
 import { useResource } from "./useResource";
 import Promotions from "./Promotions";
+import { money } from "./money";
 
 export interface MenuItem {
   id: number; category_id: number; name: string; description: string;
@@ -13,7 +14,6 @@ export interface MenuData {
   allowed_options: Record<string, number[]>;
   combinations: Record<string, [number, number][]>;
 }
-export const money = (value: string) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(value));
 
 export default function Menu() {
   const { data, error, loading, reload } = useResource<MenuData>("/menu");

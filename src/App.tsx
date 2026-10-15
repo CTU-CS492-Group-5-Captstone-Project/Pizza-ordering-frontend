@@ -15,9 +15,23 @@ export default function App() {
   const [attempt, setAttempt] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [page, setPage] = useState(location.hash.slice(1));
+  const [sessionMessage, setSessionMessage] = useState("");
+  useEffect(() => {
+    const expired = () => {
+      setUser(null);
+      setSessionMessage("Your session expired or is no longer valid. Sign in again to continue.");
+    };
+    const renewed = () => setSessionMessage("");
+    addEventListener("session-expired", expired);
+    addEventListener("session-activity", renewed);
+    return () => {
+      removeEventListener("session-expired", expired);
+      removeEventListener("session-activity", renewed);
+    };
+  }, []);
   useEffect(() => {
     const change = () => {
-      setPage(location.hash.slice(1));
+      if (location.hash !== "#main") setPage(location.hash.slice(1));
       document.getElementById("main")?.focus();
     };
     addEventListener("hashchange", change);
@@ -71,7 +85,8 @@ export default function App() {
         </nav>
       </header>
       <main id="main" tabIndex={-1}>
-        {(page === "" || page === "home") && <Home />}
+        {sessionMessage && <p role="alert">{sessionMessage} <a href="#account">Sign in</a></p>}
+        {(page === "" || page === "home" || page === "main") && <Home />}
         {page === "account" && <section aria-labelledby="connection-heading">
           <h2 id="connection-heading">Service connection</h2>
           <p role="status">{status}</p>
@@ -91,6 +106,8 @@ export default function App() {
         {page === "profile" && (user?.role_name === "customer"
           ? <CustomerForm key={user.id} profile={user} />
           : <p role="alert">Sign in as a customer to edit your profile.</p>)}
+        {!["", "home", "main", "account", "register", "menu", "cart", "profile", "customer", "staff", "admin"].includes(page) &&
+          !page.startsWith("customize/") && <p role="alert">Page not found. <a href="#home">Return home</a>.</p>}
       </main>
       <footer>Pizza Restaurant Online Ordering &middot; Capstone demo</footer>
     </>

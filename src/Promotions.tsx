@@ -1,5 +1,5 @@
 import { useResource } from "./useResource";
-import { money } from "./Menu";
+import { money } from "./money";
 
 interface Promotion { id: number; title: string; conditions: string; minimum_subtotal: string }
 
