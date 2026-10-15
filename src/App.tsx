@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { checkHealth } from "./api";
+import Account from "./Account";
 
 export default function App() {
   const [status, setStatus] = useState("Checking API connection...");
@@ -43,7 +44,7 @@ export default function App() {
       <main id="main">
         <h1>Online ordering project</h1>
         <p>
-          The project foundation is ready. Menu browsing, customer accounts,
+          Sign in to your account below. Menu browsing, registration,
           and the cart will be added in the following Sprint 1 steps.
         </p>
         <section aria-labelledby="connection-heading">
@@ -53,6 +54,7 @@ export default function App() {
             Check connection again
           </button>
         </section>
+        <Account />
       </main>
     </>
   );
