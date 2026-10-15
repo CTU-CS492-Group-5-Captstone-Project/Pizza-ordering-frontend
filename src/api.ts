@@ -28,10 +28,16 @@ export async function apiRequest(path: string, options: RequestInit = {}): Promi
     const data: unknown = await response.json();
     const detail = typeof data === "object" && data !== null && "detail" in data
       ? data.detail : null;
+    if (response.status === 401 && path !== "/auth/login") {
+      dispatchEvent(new CustomEvent("session-expired"));
+    }
     throw new ApiError(
       response.status,
       typeof detail === "string" ? detail : "Please check the form values and try again.",
     );
+  }
+  if (path !== "/auth/csrf" && path !== "/auth/logout") {
+    dispatchEvent(new CustomEvent("session-activity"));
   }
 
   return response;

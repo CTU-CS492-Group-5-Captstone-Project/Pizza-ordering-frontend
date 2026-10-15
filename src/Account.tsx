@@ -12,6 +12,31 @@ export default function Account({ onUserChange }: { onUserChange: (user: User | 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   useEffect(() => { onUserChange(user); }, [user, onUserChange]);
+  useEffect(() => {
+    const expired = () => {
+      setUser(null);
+      setMessage("Your session expired or is no longer valid. Sign in again.");
+    };
+    addEventListener("session-expired", expired);
+    return () => removeEventListener("session-expired", expired);
+  }, []);
+  useEffect(() => {
+    if (!user) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        setUser(null);
+        setMessage("Your session timed out after 15 minutes without server activity. Sign in again.");
+      }, 15 * 60 * 1000);
+    };
+    schedule();
+    addEventListener("session-activity", schedule);
+    return () => {
+      clearTimeout(timer);
+      removeEventListener("session-activity", schedule);
+    };
+  }, [user]);
 
   useEffect(() => {
     const controller = new AbortController();
