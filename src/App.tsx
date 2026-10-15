@@ -11,7 +11,10 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [page, setPage] = useState(location.hash.slice(1));
   useEffect(() => {
-    const change = () => setPage(location.hash.slice(1));
+    const change = () => {
+      setPage(location.hash.slice(1));
+      document.getElementById("main")?.focus();
+    };
     addEventListener("hashchange", change);
     return () => removeEventListener("hashchange", change);
   }, []);
@@ -60,7 +63,7 @@ export default function App() {
           {user?.role_name === "administrator" && <a href="#admin">Administrator workspace</a>}
         </nav>
       </header>
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <h1>Online ordering project</h1>
         <p>
           Sign in to your account below. Menu browsing, registration,
@@ -82,6 +85,7 @@ export default function App() {
           ? <CustomerForm key={user.id} profile={user} />
           : <p role="alert">Sign in as a customer to edit your profile.</p>)}
       </main>
+      <footer>Pizza Restaurant Online Ordering &middot; Capstone demo</footer>
     </>
   );
 }

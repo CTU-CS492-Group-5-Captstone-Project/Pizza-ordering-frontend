@@ -71,6 +71,13 @@ HTTP browser checks cannot certify hosted Secure-cookie/proxy behavior.
 
 ## Structure and conventions
 
+S1-T15/T16: shared responsive layout/styles apply across account, registration,
+profile and role workspaces. Navigation wraps on narrow screens, controls have
+44px targets, focus is visible, forms have labels and live error/status
+summaries, and a skip link and focusable main landmark support keyboard use.
+Images use descriptive alt text when added; reduced-motion preferences are
+respected. Do not convey availability or errors by color alone.
+
 - `src/App.tsx`: setup screen (not the Sprint restaurant home page).
 - `src/Account.tsx`: accessible login/logout and session restoration.
 - `src/api.ts`: typed API integration.
