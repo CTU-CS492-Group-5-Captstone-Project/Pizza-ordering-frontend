@@ -4,6 +4,7 @@ import Account from "./Account";
 import Workspace from "./Workspace";
 import CustomerForm from "./CustomerForm";
 import Home from "./Home";
+import Menu from "./Menu";
 import { restaurant } from "./restaurant";
 import type { User } from "./api";
 
@@ -80,7 +81,7 @@ export default function App() {
         </div>
         {["customer", "staff", "admin"].includes(page) && <Workspace user={user} page={page} />}
         {page === "register" && <CustomerForm />}
-        {page === "menu" && <p>Menu browsing is being connected in the next Sprint task.</p>}
+        {page === "menu" && <Menu />}
         {page === "profile" && (user?.role_name === "customer"
           ? <CustomerForm key={user.id} profile={user} />
           : <p role="alert">Sign in as a customer to edit your profile.</p>)}
