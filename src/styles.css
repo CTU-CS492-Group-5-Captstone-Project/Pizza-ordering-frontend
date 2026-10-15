@@ -1,0 +1,25 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #242424;
+  background: #fffaf3;
+  line-height: 1.6;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+header { padding: 1rem 1.5rem; background: #782a21; color: white; }
+main { max-width: 58rem; margin: 2rem auto; padding: 0 1.5rem; }
+section { padding: 1.5rem; background: white; border: 1px solid #aaa; }
+h1, h2 { line-height: 1.25; }
+button {
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: #782a21;
+  color: white;
+  font: inherit;
+  cursor: pointer;
+}
+:focus-visible { outline: 3px solid #0863b3; outline-offset: 4px; }
+.skip-link { position: absolute; top: -10rem; padding: 0.5rem; background: white; color: #242424; }
+.skip-link:focus { top: 0.5rem; }
