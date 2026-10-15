@@ -6,6 +6,7 @@ import CustomerForm from "./CustomerForm";
 import Home from "./Home";
 import Menu from "./Menu";
 import Customize from "./Customize";
+import Cart from "./Cart";
 import { restaurant } from "./restaurant";
 import type { User } from "./api";
 
@@ -85,6 +86,8 @@ export default function App() {
         {page === "register" && <CustomerForm />}
         {page === "menu" && <Menu />}
         {page.startsWith("customize/") && <Customize key={page} id={Number(page.split("/")[1])} user={user} />}
+        {page === "cart" && (user?.role_name === "customer" ? <Cart key={user.id} /> :
+          <p role="alert"><a href="#account">Sign in as a customer</a> to view your cart.</p>)}
         {page === "profile" && (user?.role_name === "customer"
           ? <CustomerForm key={user.id} profile={user} />
           : <p role="alert">Sign in as a customer to edit your profile.</p>)}
