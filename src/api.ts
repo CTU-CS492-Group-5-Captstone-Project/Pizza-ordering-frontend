@@ -18,7 +18,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request(path: string, options: RequestInit = {}): Promise<Response> {
+export async function apiRequest(path: string, options: RequestInit = {}): Promise<Response> {
   const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
     credentials: "same-origin",
@@ -33,8 +33,11 @@ async function request(path: string, options: RequestInit = {}): Promise<Respons
       typeof detail === "string" ? detail : "Please check the form values and try again.",
     );
   }
+
   return response;
 }
+
+const request = apiRequest;
 
 export async function getUser(signal?: AbortSignal): Promise<User> {
   const response = await request("/auth/me", { signal });

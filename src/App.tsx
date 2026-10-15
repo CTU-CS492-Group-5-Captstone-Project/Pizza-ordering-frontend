@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 import { checkHealth } from "./api";
 import Account from "./Account";
+import Workspace from "./Workspace";
+import type { User } from "./api";
 
 export default function App() {
   const [status, setStatus] = useState("Checking API connection...");
   const [attempt, setAttempt] = useState(0);
+  const [user, setUser] = useState<User | null>(null);
+  const [page, setPage] = useState(location.hash.slice(1));
+  useEffect(() => {
+    const change = () => setPage(location.hash.slice(1));
+    addEventListener("hashchange", change);
+    return () => removeEventListener("hashchange", change);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -40,6 +49,13 @@ export default function App() {
       <header>
         <a href="#main" className="skip-link">Skip to content</a>
         <span>Pizza Restaurant</span>
+        <nav aria-label="Main navigation">
+          <a href="#home">Home</a>{" "}
+          <a href="#account">Account</a>{" "}
+          {user?.role_name === "customer" && <a href="#customer">Customer workspace</a>}
+          {user && ["staff", "administrator"].includes(user.role_name) && <a href="#staff">Staff workspace</a>}
+          {user?.role_name === "administrator" && <a href="#admin">Administrator workspace</a>}
+        </nav>
       </header>
       <main id="main">
         <h1>Online ordering project</h1>
@@ -54,7 +70,10 @@ export default function App() {
             Check connection again
           </button>
         </section>
-        <Account />
+        <div hidden={page !== "account" && page !== "" && page !== "home"}>
+          <Account onUserChange={setUser} />
+        </div>
+        {["customer", "staff", "admin"].includes(page) && <Workspace user={user} page={page} />}
       </main>
     </>
   );

@@ -3,7 +3,7 @@ import type { FormEvent } from "react";
 import { ApiError, getUser, login, logout } from "./api";
 import type { User } from "./api";
 
-export default function Account() {
+export default function Account({ onUserChange }: { onUserChange: (user: User | null) => void }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -11,6 +11,7 @@ export default function Account() {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  useEffect(() => { onUserChange(user); }, [user, onUserChange]);
 
   useEffect(() => {
     const controller = new AbortController();
