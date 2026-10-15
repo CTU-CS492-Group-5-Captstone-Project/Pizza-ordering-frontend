@@ -8,7 +8,7 @@ interface CartLine {
   id: string; name: string; quantity: number; customizations: string[];
   unit_price: string; line_total: string; available: boolean; issue: string | null;
 }
-export interface CartData { lines: CartLine[]; subtotal: string; tax: string; tax_rate: string; total: string; currency: "USD" }
+export interface CartData { lines: CartLine[]; subtotal: string; tax: string; tax_rate: string; total: string; currency: "USD"; discount: string; taxable_subtotal: string; promotion_title: string | null }
 
 export default function Cart() {
   const { data, loading, error, reload } = useResource<CartData>("/cart");
@@ -48,6 +48,8 @@ export default function Cart() {
           <p><button type="button" onClick={() => change(line.id)} disabled={busy}>Remove {line.name}</button></p>
         </article>)}
         <h2>Summary</h2><p>Subtotal: {money(data.subtotal)}</p>
+        <p>Discount{data.promotion_title ? ` (${data.promotion_title})` : ""}: -{money(data.discount)}</p>
+        <p>Taxable subtotal: {money(data.taxable_subtotal)}</p>
         <p>Tax ({Number(data.tax_rate) * 100}%): {money(data.tax)}</p>
         <p><strong>Total: {money(data.total)} {data.currency}</strong></p>
         <p>No payment or checkout is available in this Sprint.</p>
