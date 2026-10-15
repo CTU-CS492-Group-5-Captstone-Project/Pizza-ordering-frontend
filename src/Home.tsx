@@ -1,4 +1,5 @@
 import { restaurant } from "./restaurant";
+import Promotions from "./Promotions";
 
 export default function Home() {
   return <>
@@ -11,6 +12,7 @@ export default function Home() {
         {restaurant.photos.map(photo => <img key={photo.src} src={photo.src} alt={photo.alt} loading="lazy" />)}
       </div>
     </section>
+    <Promotions />
     <section className="grid">
       <div><h2>Operating hours</h2><ul>{restaurant.hours.map(hours => <li key={hours}>{hours}</li>)}</ul><p>Hours are local restaurant time.</p></div>
       <div><h2>Visit or contact us</h2><address>

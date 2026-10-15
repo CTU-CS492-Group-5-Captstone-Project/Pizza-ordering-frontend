@@ -1,4 +1,5 @@
 import { useResource } from "./useResource";
+import Promotions from "./Promotions";
 
 export interface MenuItem {
   id: number; category_id: number; name: string; description: string;
@@ -21,6 +22,7 @@ export default function Menu() {
   if (!data || !data.items.length) return <p>No menu items are currently listed. Please check back soon.</p>;
   return <>
     <h1>Our menu</h1>
+    <Promotions />
     <p>Prices are in USD before tax. Pizza sizes and extras may add charges. Ask us about allergens.</p>
     {data.categories.map(category => <section key={category.id}>
       <h2>{category.name}</h2>
