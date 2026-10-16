@@ -18,30 +18,49 @@ export class ApiError extends Error {
   }
 }
 
-async function request(path: string, options: RequestInit = {}): Promise<Response> {
+export async function apiRequest(path: string, options: RequestInit = {}): Promise<Response> {
+  const timeout = AbortSignal.timeout(15000);
   const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
+    signal: options.signal ? AbortSignal.any([options.signal, timeout]) : timeout,
     credentials: "same-origin",
     cache: "no-store",
   });
   if (!response.ok) {
+    if (!response.headers.get("content-type")?.includes("application/json")) {
+      throw new ApiError(response.status, `Service request failed (HTTP ${response.status}). Please try again.`);
+    }
     const data: unknown = await response.json();
     const detail = typeof data === "object" && data !== null && "detail" in data
       ? data.detail : null;
+    if (response.status === 401 && path !== "/auth/login" &&
+        !(path === "/auth/me" && detail === "Sign in to continue.")) {
+      dispatchEvent(new CustomEvent("session-expired"));
+    }
+    const validation = Array.isArray(detail) ? detail.map((item: unknown) => {
+      if (typeof item !== "object" || item === null || !("loc" in item) || !("msg" in item)) return "Invalid field.";
+      return `${Array.isArray(item.loc) ? item.loc.slice(1).join(".") : "Field"}: ${String(item.msg)}`;
+    }).join(" ") : null;
     throw new ApiError(
       response.status,
-      typeof detail === "string" ? detail : "Please check the form values and try again.",
+      typeof detail === "string" ? detail : validation || "Please check the form values and try again.",
     );
   }
+  if (/^\/(?:auth\/(?:me|login)|profile|cart|customers|staff|admin)(?:\/|$)/.test(path)) {
+    dispatchEvent(new CustomEvent("session-activity"));
+  }
+
   return response;
 }
+
+const request = apiRequest;
 
 export async function getUser(signal?: AbortSignal): Promise<User> {
   const response = await request("/auth/me", { signal });
   return response.json();
 }
 
-async function csrfToken(): Promise<string> {
+export async function csrfToken(): Promise<string> {
   const response = await request("/auth/csrf");
   const data: unknown = await response.json();
   if (
@@ -49,6 +68,15 @@ async function csrfToken(): Promise<string> {
     !("csrf_token" in data) || typeof data.csrf_token !== "string"
   ) throw new Error("Unexpected security response. Refresh and try again.");
   return data.csrf_token;
+}
+
+export async function mutate(path: string, method: string, body?: unknown): Promise<Response> {
+  const csrf = await csrfToken();
+  return apiRequest(path, {
+    method,
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
 }
 
 export async function login(email: string, password: string): Promise<User> {

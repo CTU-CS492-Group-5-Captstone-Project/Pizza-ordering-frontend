@@ -3,7 +3,7 @@ import type { FormEvent } from "react";
 import { ApiError, getUser, login, logout } from "./api";
 import type { User } from "./api";
 
-export default function Account() {
+export default function Account({ onUserChange }: { onUserChange: (user: User | null) => void }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -11,6 +11,41 @@ export default function Account() {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  useEffect(() => { onUserChange(user); }, [user, onUserChange]);
+  useEffect(() => {
+    const refresh = () => {
+      getUser().then(setUser).catch((failure: unknown) =>
+        setError(failure instanceof Error ? failure.message : "Unable to refresh profile."));
+    };
+    addEventListener("profile-updated", refresh);
+    return () => removeEventListener("profile-updated", refresh);
+  }, []);
+  useEffect(() => {
+    const expired = () => {
+      setUser(null);
+      setMessage("Your session expired or is no longer valid. Sign in again.");
+    };
+    addEventListener("session-expired", expired);
+    return () => removeEventListener("session-expired", expired);
+  }, []);
+  useEffect(() => {
+    if (!user) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        setUser(null);
+        setMessage("Your session timed out after 15 minutes without server activity. Sign in again.");
+        dispatchEvent(new CustomEvent("session-expired"));
+      }, 15 * 60 * 1000);
+    };
+    schedule();
+    addEventListener("session-activity", schedule);
+    return () => {
+      clearTimeout(timer);
+      removeEventListener("session-activity", schedule);
+    };
+  }, [user]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -85,7 +120,7 @@ export default function Account() {
           <button type="submit" disabled={busy}>
             {busy ? "Signing in..." : "Sign in"}
           </button>
-          <p>Public registration will be available in a later Sprint step.</p>
+          <a href="#register">Create a customer account</a>
         </form>
       )}
       {error && <p id="account-error" role="alert">{error}</p>}

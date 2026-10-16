@@ -1,9 +1,10 @@
 # Pizza Ordering Frontend
 
-React + TypeScript + Vite. The initial setup page checks the existing FastAPI
-health endpoint and reports loading, connection success, errors, and timeouts.
-Ordering features will arrive in later Sprint 1 steps.
-The page also provides login, session restoration on reload, and logout.
+React + strict TypeScript + Vite. Sprint 1 includes the restaurant home,
+database-driven menu/promotions, registration, login/logout, customer profile,
+role workspaces, pizza customization, and customer cart updates with server
+pricing. Payment and checkout/order submission are out of scope.
+The Account page checks API connectivity and restores sessions on reload.
 Passwords are cleared after each login attempt; session cookies are HttpOnly
 and are never stored in JavaScript storage.
 
@@ -13,9 +14,9 @@ Install Node.js **24 LTS** (includes npm). Open a new PowerShell after installin
 From this repository:
 
 ```powershell
-npm ci
+npm.cmd ci
 Copy-Item .env.example .env
-npm run dev
+npm.cmd run dev
 ```
 
 Open `http://localhost:5173`. Start the backend separately at
@@ -25,9 +26,10 @@ API origin. The dev server fails explicitly if port 5173 is already in use.
 If PowerShell blocks `npm.ps1`, use `npm.cmd` in these commands instead.
 The root workspace also provides Ctrl+Shift+B and F5 startup shortcuts.
 
-For login, the backend needs a configured PostgreSQL database, migrations,
-and a manually created local demo customer until public registration is added.
-Follow its S1-T06 instructions. Set `COOKIE_SECURE=false` only in the local
+The backend needs a configured PostgreSQL database and migrations.
+Run its explicit menu seed for sample pizzas/offers, then use Register to
+create a customer and Account to sign in. No accounts/passwords are seeded.
+Set `COOKIE_SECURE=false` only in the local
 backend development environment. Without database configuration, account
 requests show an explicit error while the health connection can still succeed.
 
@@ -46,8 +48,8 @@ this client setup. Do not put account credentials in frontend configuration.
 ## Build and verify
 
 ```powershell
-npm run build
-npm run preview
+npm.cmd run build
+npm.cmd run preview
 ```
 
 The build first runs strict TypeScript checks, then writes static assets to
@@ -64,20 +66,53 @@ backend's `https://<your-api-host>/api/:splat`, followed by the SPA fallback
 `/* -> /index.html`. These require the actual staging hostname, not literal
 placeholder values. Verify the health check over the public HTTPS frontend
 origin. The host must preserve session cookie headers, Origin, and
-X-CSRF-Token, and must not cache `/api/v1/auth/*`. Set backend
+X-CSRF-Token, and must not cache auth or private profile/cart responses. Set backend
 `COOKIE_SECURE=true` and `TRUSTED_ORIGINS` to the public Netlify HTTPS origin.
 Verify login, restored sessions, and logout on the actual deployment; local
 HTTP browser checks cannot certify hosted Secure-cookie/proxy behavior.
 
 ## Structure and conventions
 
-- `src/App.tsx`: setup screen (not the Sprint restaurant home page).
+S1-T12: restaurant content is maintained in `src/restaurant.ts` (description,
+hours, contact details and photo URLs). All contact details are demo placeholders.
+Photos are externally hosted on Unsplash; visitors' browsers contact that service.
+Replace demo information and confirm image rights before using for a real business.
+The Home page links directly to menu/order navigation and does not accept payments.
+
+S1-T15/T16: shared responsive layout/styles apply across account, registration,
+profile and role workspaces. Navigation wraps on narrow screens, controls have
+44px targets, focus is visible, forms have labels and live error/status
+summaries, and a skip link and focusable main landmark support keyboard use.
+Images use descriptive alt text when added; reduced-motion preferences are
+respected. Do not convey availability or errors by color alone.
+
+- `src/App.tsx`: shared layout, role-aware navigation, and hash routes.
 - `src/Account.tsx`: accessible login/logout and session restoration.
-- `src/api.ts`: typed API integration.
-- `src/styles.css`: initial global styles; the full shared layout is Step 10.
+- `src/CustomerForm.tsx`: registration and own-profile validation feedback.
+- `src/Home.tsx`, `src/restaurant.ts`: editable demo restaurant information.
+- `src/Menu.tsx`, `src/Promotions.tsx`: database menu/offers and resource states.
+- `src/Customize.tsx`, `src/Cart.tsx`: selections, add/update/remove, totals.
+- `src/Workspace.tsx`: role-gated access confirmation, not staff operations.
+- `src/api.ts`, `src/useResource.ts`: typed API/CSRF, timeouts, loading/retry.
+- `src/money.ts`: shared display formatting; server owns price calculations.
+- `src/styles.css`: shared responsive accessible layout.
 - `vite.config.ts`: React plugin and local API proxy.
 
 Use strict TypeScript, semantic HTML, visible keyboard focus, and accessible
 status messages. Follow the parent project's `CONTRIBUTING.md`. This folder
 is a separate Git repository: branch, review, commit, and push here before
 updating the parent project's frontend reference.
+
+## Demo checks
+
+Register, sign in, reload, and update Profile. Choose pizza options, add two
+different configurations, change quantities across the $20 promotion threshold,
+remove lines, and confirm the empty-cart message. Prices and totals always
+come from the backend; the default tax is a configurable demo 8.25%.
+Unavailable items/options cannot be selected. Menu and promotion sections
+show loading, empty, and error/retry states rather than fake data.
+
+Check keyboard focus, labels, skip link, validation summaries, narrow screens,
+sign-out, and forbidden role routes. Server inactivity expiry is 15 minutes;
+public menu browsing does not renew it. Frontend guards supplement, never
+replace, backend permission/ownership checks.
