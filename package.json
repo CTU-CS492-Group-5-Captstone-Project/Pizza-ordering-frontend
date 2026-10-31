@@ -8,10 +8,12 @@
   },
   "scripts": {
     "dev": "vite --host localhost --port 5173 --strictPort",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/hosting.mjs",
     "preview": "vite preview --host localhost"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^5.6.1",
+    "@stripe/stripe-js": "^8.7.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

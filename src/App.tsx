@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { checkHealth } from "./api";
 import Account from "./Account";
-import Workspace from "./Workspace";
+import Checkout from "./Checkout";
+import Orders, { OrderDetail } from "./Orders";
+import Staff from "./Staff";
+import Admin from "./Admin";
 import CustomerForm from "./CustomerForm";
 import Home from "./Home";
 import Menu from "./Menu";
@@ -78,10 +81,11 @@ export default function App() {
           {user?.role_name === "customer" && <a href="#cart">Cart</a>}
           <a href="#account">Account</a>{" "}
           {!user && <a href="#register">Register</a>}
-          {user?.role_name === "customer" && <a href="#customer">Customer workspace</a>}
+          {user?.role_name === "customer" && <a href="#orders">Order history</a>}
+          {user?.role_name === "customer" && <a href="#checkout">Checkout</a>}
           {user?.role_name === "customer" && <a href="#profile">Profile</a>}
-          {user && ["staff", "administrator"].includes(user.role_name) && <a href="#staff">Staff workspace</a>}
-          {user?.role_name === "administrator" && <a href="#admin">Administrator workspace</a>}
+          {user && ["staff", "administrator"].includes(user.role_name) && <a href="#staff">Staff queue</a>}
+          {user?.role_name === "administrator" && <a href="#admin">Manage restaurant</a>}
         </nav>
       </header>
       <main id="main" tabIndex={-1}>
@@ -97,7 +101,16 @@ export default function App() {
         <div hidden={page !== "account"}>
           <Account onUserChange={setUser} />
         </div>
-        {["customer", "staff", "admin"].includes(page) && <Workspace user={user} page={page} />}
+        {["customer", "orders", "checkout"].includes(page) || page.startsWith("order/") ?
+          user?.role_name === "customer" ?
+            page === "checkout" ? <Checkout key={user.id} user={user} /> :
+            page.startsWith("order/") ? <OrderDetail key={`${user.id}-${page}`} id={page.split("/")[1]} /> :
+            <Orders key={user.id} /> :
+            <p role="alert"><a href="#account">Sign in as a customer</a> to access your orders.</p> : null}
+        {page === "staff" && (user && ["staff", "administrator"].includes(user.role_name) ? <Staff key={user.id} /> :
+          <p role="alert">Sign in with a staff or administrator account.</p>)}
+        {page === "admin" && (user?.role_name === "administrator" ? <Admin key={user.id} /> :
+          <p role="alert">Sign in with an administrator account.</p>)}
         {page === "register" && <CustomerForm />}
         {page === "menu" && <Menu />}
         {page.startsWith("customize/") && <Customize key={page} id={Number(page.split("/")[1])} user={user} />}
@@ -106,8 +119,8 @@ export default function App() {
         {page === "profile" && (user?.role_name === "customer"
           ? <CustomerForm key={user.id} profile={user} />
           : <p role="alert">Sign in as a customer to edit your profile.</p>)}
-        {!["", "home", "main", "account", "register", "menu", "cart", "profile", "customer", "staff", "admin"].includes(page) &&
-          !page.startsWith("customize/") && <p role="alert">Page not found. <a href="#home">Return home</a>.</p>}
+        {!["", "home", "main", "account", "register", "menu", "cart", "profile", "customer", "staff", "admin", "orders", "checkout"].includes(page) &&
+          !page.startsWith("customize/") && !page.startsWith("order/") && <p role="alert">Page not found. <a href="#home">Return home</a>.</p>}
       </main>
       <footer>Pizza Restaurant Online Ordering &middot; Capstone demo</footer>
     </>

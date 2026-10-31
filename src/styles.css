@@ -51,6 +51,14 @@ img { display: block; max-width: 100%; object-fit: cover; }
 footer { text-align: center; padding: 2rem 1rem; border-top: 1px solid #c2b6a8; }
 table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; padding: 0.6rem; border-bottom: 1px solid #ddd; }
+.totals { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.4rem 1rem; max-width: 32rem; }
+.totals dd { margin: 0; text-align: right; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1rem 0; }
+.card + .card { margin-top: 1rem; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+details { margin: 1rem 0; }
+summary { cursor: pointer; min-height: 44px; font-weight: 650; }
+.choice { display: flex; align-items: center; min-height: 44px; font-weight: 400; }
 @media (prefers-reduced-motion: no-preference) {
   button, a { transition: background-color 120ms ease; }
 }
