@@ -1,9 +1,12 @@
 # Pizza Ordering Frontend
 
-React + strict TypeScript + Vite. Sprint 1 includes the restaurant home,
+React + strict TypeScript + Vite. The final sprint includes the restaurant home,
 database-driven menu/promotions, registration, login/logout, customer profile,
 role workspaces, pizza customization, and customer cart updates with server
-pricing. Payment and checkout/order submission are out of scope.
+pricing, Stripe sandbox hosted-field checkout, confirmation/order history,
+staff queue and administrator menu/promotions/audit screens.
+See the parent [final-sprint guide](../FINAL_SPRINT.md) for setup blockers,
+verification and demonstration instructions.
 The Account page checks API connectivity and restores sessions on reload.
 Passwords are cleared after each login attempt; session cookies are HttpOnly
 and are never stored in JavaScript storage.
@@ -54,17 +57,17 @@ npm.cmd run preview
 
 The build first runs strict TypeScript checks, then writes static assets to
 `dist/`. Commit `package-lock.json`; do not commit `node_modules` or `dist`.
-Preview serves the build at `http://localhost:4173` but does not proxy the API;
-use the dev server for local API integration or a staging reverse proxy.
+Preview serves the build at `http://localhost:4173` and inherits the Vite API
+proxy. `DEV_API_TARGET` can override the default loopback API for disposable
+browser tests; it is not a public production configuration setting.
 
 ## Staging
 
-On Netlify (or an equivalent static host), use Node.js 24 LTS, `npm ci` followed
-by `npm run build`, and publish `dist/`. Set `VITE_API_BASE_URL=/api/v1`.
-Configure a status-200 reverse proxy for `/api/*` to the separately hosted
-backend's `https://<your-api-host>/api/:splat`, followed by the SPA fallback
-`/* -> /index.html`. These require the actual staging hostname, not literal
-placeholder values. Verify the health check over the public HTTPS frontend
+`netlify.toml` uses Node.js 24 LTS, `npm ci && npm run build`, and `dist/`.
+Set `VITE_API_BASE_URL=/api/v1` and `API_PROXY_TARGET` to the actual backend
+HTTPS origin. The build generates the status-200 API rewrite before the SPA
+fallback, CSP and other security headers. Netlify builds fail if the proxy
+target is missing. Verify the health check over the public HTTPS frontend
 origin. The host must preserve session cookie headers, Origin, and
 X-CSRF-Token, and must not cache auth or private profile/cart responses. Set backend
 `COOKIE_SECURE=true` and `TRUSTED_ORIGINS` to the public Netlify HTTPS origin.
@@ -92,7 +95,10 @@ respected. Do not convey availability or errors by color alone.
 - `src/Home.tsx`, `src/restaurant.ts`: editable demo restaurant information.
 - `src/Menu.tsx`, `src/Promotions.tsx`: database menu/offers and resource states.
 - `src/Customize.tsx`, `src/Cart.tsx`: selections, add/update/remove, totals.
-- `src/Workspace.tsx`: role-gated access confirmation, not staff operations.
+- `src/Checkout.tsx`: review, profile prefill, hosted fields and safe retry/cancel.
+- `src/Orders.tsx`, `src/OrderSummary.tsx`: saved confirmations/history/totals.
+- `src/Staff.tsx`: polling queue and versioned transitions.
+- `src/Admin.tsx`: item/option/category/offer management and audit.
 - `src/api.ts`, `src/useResource.ts`: typed API/CSRF, timeouts, loading/retry.
 - `src/money.ts`: shared display formatting; server owns price calculations.
 - `src/styles.css`: shared responsive accessible layout.
@@ -111,6 +117,14 @@ remove lines, and confirm the empty-cart message. Prices and totals always
 come from the backend; the default tax is a configurable demo 8.25%.
 Unavailable items/options cannot be selected. Menu and promotion sections
 show loading, empty, and error/retry states rather than fake data.
+
+Continue through pickup/delivery checkout using only Stripe's official sandbox
+test data. Missing credentials show a setup error, not fake success. Raw card
+fields are Stripe-hosted; the SPA stores only an opaque checkout reference in
+sessionStorage (not contact data, payment secrets or session tokens). Paid
+orders require server verification; the confirmation page reads a saved order.
+The worker sends email separately. Zero-total promotional orders require no
+card. See the parent guide for provider setup and operator recovery.
 
 Check keyboard focus, labels, skip link, validation summaries, narrow screens,
 sign-out, and forbidden role routes. Server inactivity expiry is 15 minutes;

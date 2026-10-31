@@ -1,7 +1,7 @@
 import { useResource } from "./useResource";
 import { money } from "./money";
 
-interface Promotion { id: number; title: string; conditions: string; minimum_subtotal: string }
+interface Promotion { id: number; title: string; conditions: string; minimum_subtotal: string; kind: "percent" | "fixed"; amount: string }
 
 export default function Promotions() {
   const { data, error, loading, reload } = useResource<Promotion[]>("/promotions");
@@ -12,6 +12,7 @@ export default function Promotions() {
       !data?.length ? <p>No active offers right now.</p> :
       data.map(offer => <article key={offer.id}>
         <h3>{offer.title}</h3><p>{offer.conditions}</p>
+        <p>{offer.kind === "percent" ? `${Number(offer.amount)}%` : money(offer.amount)} off the eligible subtotal (capped at subtotal).</p>
         <p>Minimum subtotal: {money(offer.minimum_subtotal)}. Best eligible offer only; no stacking.</p>
       </article>)}
   </section>;

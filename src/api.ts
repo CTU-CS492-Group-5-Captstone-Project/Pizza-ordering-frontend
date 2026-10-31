@@ -19,7 +19,7 @@ export class ApiError extends Error {
 }
 
 export async function apiRequest(path: string, options: RequestInit = {}): Promise<Response> {
-  const timeout = AbortSignal.timeout(15000);
+  const timeout = AbortSignal.timeout(path.startsWith("/checkout") ? 45000 : 15000);
   const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
     signal: options.signal ? AbortSignal.any([options.signal, timeout]) : timeout,
@@ -46,7 +46,8 @@ export async function apiRequest(path: string, options: RequestInit = {}): Promi
       typeof detail === "string" ? detail : validation || "Please check the form values and try again.",
     );
   }
-  if (/^\/(?:auth\/(?:me|login)|profile|cart|customers|staff|admin)(?:\/|$)/.test(path)) {
+  if (new Headers(options.headers).get("X-Background-Refresh") !== "1" &&
+      /^\/(?:auth\/(?:me|login)|profile|cart|customers|staff|admin|orders|checkout)(?:\/|$|\?)/.test(path)) {
     dispatchEvent(new CustomEvent("session-activity"));
   }
 

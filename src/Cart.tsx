@@ -52,7 +52,7 @@ export default function Cart() {
         <p>Taxable subtotal: {money(data.taxable_subtotal)}</p>
         <p>Tax ({Number(data.tax_rate) * 100}%): {money(data.tax)}</p>
         <p><strong>Total: {money(data.total)} {data.currency}</strong></p>
-        <p>No payment or checkout is available in this Sprint.</p>
+        <p><a className="button" href="#checkout">Review &amp; checkout</a></p>
       </>}
     {failure && <p role="alert">{failure}</p>}<p role="status">{message}</p>
     <a href="#menu">Continue browsing</a>
