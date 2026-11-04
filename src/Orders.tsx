@@ -3,12 +3,35 @@ import type { CartData } from "./Cart";
 import { money } from "./money";
 import OrderSummary from "./OrderSummary";
 import { useResource } from "./useResource";
+import { mutate } from "./api";
 
 export interface OrderData {
   id: string; number: string; created_at: string; status: "received" | "preparing" | "ready" | "completed"; version: number;
   summary: Omit<CartData, "lines">;
   fulfillment: { name: string; phone: string; email: string; fulfillment: "pickup" | "delivery"; default_delivery_address: string | null };
   lines: { name: string; customizations: string[]; quantity: number; unit_price: string; line_total: string }[];
+  reorder_available: boolean;
+}
+
+function Reorder({ order }: { order: OrderData }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function reorder() {
+    setBusy(true); setError("");
+    try {
+      await mutate(`/orders/${encodeURIComponent(order.id)}/reorder`, "POST");
+      location.hash = "#cart";
+    } catch (failure: unknown) {
+      setError(failure instanceof Error ? failure.message : "Unable to re-order. Please try again.");
+    } finally { setBusy(false); }
+  }
+  return <div>
+    {order.reorder_available ? <>
+      <p>Add these items to your existing cart at current prices and offers. Review the cart and checkout to pay.</p>
+      <button disabled={busy} onClick={reorder}>{busy ? "Adding to cart..." : "Re-order"}</button>
+    </> : <p>Re-order is unavailable for this older order because item selections were not saved. <a href="#menu">Choose items from the menu</a>.</p>}
+    {error && <p role="alert">{error}</p>}
+  </div>;
 }
 
 export function OrderContents({ order }: { order: OrderData }) {
@@ -27,7 +50,7 @@ export function OrderDetail({ id }: { id: string }) {
   return <section><h1>Order confirmation</h1>
     {loading && <p role="status">Loading saved order...</p>}
     {error && <p role="alert">{error} <button onClick={reload}>Retry</button></p>}
-    {data && <><h2>{data.number}</h2><p>Your order has been saved. An email confirmation is queued separately; email delays do not affect your order.</p><OrderContents order={data} /></>}
+    {data && <><h2>{data.number}</h2><p>Your order has been saved. An email confirmation is queued separately; email delays do not affect your order.</p><OrderContents order={data} /><Reorder order={data} /></>}
     <a href="#orders">All your orders</a>
   </section>;
 }
@@ -42,6 +65,7 @@ export default function Orders() {
     {data?.map(order => <article className="card" key={order.id}>
       <h2><a href={`#order/${order.id}`}>{order.number}</a></h2>
       <OrderContents order={order} />
+      <Reorder order={order} />
     </article>)}
     <div className="actions">
       <button disabled={loading || offset === 0} onClick={() => setOffset(value => Math.max(0, value - 25))}>Newer orders</button>
