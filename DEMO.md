@@ -174,7 +174,9 @@ original item names, options and prices."
 2. Reload the customer menu to show the offer.
 3. Explain that only the best eligible offer applies; an existing better offer
    may still win in the cart.
-4. Disable the demo promotion and save.
+4. Disable the demo promotion and save. To remove it entirely, expand the offer,
+   click **Delete promotion**, then **Confirm delete promotion**. **Keep promotion**
+   cancels the action. Deleted offers stop applying; saved orders keep their discounts.
 5. Click **View audit history** and expand the menu/promotion changes to show
    the actor, timestamp, and before/after values.
 
