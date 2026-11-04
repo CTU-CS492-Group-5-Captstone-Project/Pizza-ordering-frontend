@@ -1,5 +1,8 @@
 # Pizza Ordering Frontend
 
+For the hosted presentation, follow the
+[step-by-step demo walkthrough with sprint references](DEMO.md).
+
 React + strict TypeScript + Vite. The final sprint includes the restaurant home,
 database-driven menu/promotions, registration, login/logout, customer profile,
 role workspaces, pizza customization, and customer cart updates with server
