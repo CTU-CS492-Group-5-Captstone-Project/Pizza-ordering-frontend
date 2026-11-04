@@ -101,7 +101,7 @@ respected. Do not convey availability or errors by color alone.
 - `src/Checkout.tsx`: review, profile prefill, hosted fields and safe retry/cancel.
 - `src/Orders.tsx`, `src/OrderSummary.tsx`: saved confirmations/history/totals.
 - `src/Staff.tsx`: polling queue and versioned transitions.
-- `src/Admin.tsx`: item/option/category/offer management and audit.
+- `src/Admin.tsx`: item/option/category/offer management and audit, including confirmed promotion deletion without changing saved orders.
 - `src/api.ts`, `src/useResource.ts`: typed API/CSRF, timeouts, loading/retry.
 - `src/money.ts`: shared display formatting; server owns price calculations.
 - `src/styles.css`: shared responsive accessible layout.

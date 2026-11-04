@@ -168,6 +168,7 @@ export default function Admin() {
   const [message, setMessage] = useState("");
   const [showAudit, setShowAudit] = useState(false);
   const [archiveId, setArchiveId] = useState<number | null>(null);
+  const [deletePromotionId, setDeletePromotionId] = useState<number | null>(null);
   const save: Save = async (path, method, body) => {
     setBusy(true); setFailure(""); setMessage("");
     try {
@@ -222,6 +223,13 @@ export default function Admin() {
         {data.promotions.map(promotion => <details key={promotion.id}>
           <summary>{promotion.title} &mdash; {!promotion.enabled ? "disabled" : Date.parse(promotion.ends_at) <= Date.now() ? "expired" : Date.parse(promotion.starts_at) > Date.now() ? "scheduled" : "active"}</summary>
           <PromotionEditor promotion={promotion} save={save} busy={busy} />
+          {deletePromotionId === promotion.id ? <div className="actions">
+            <p>Delete {promotion.title}? This cannot be undone. Future carts and checkouts will use remaining offers; historical orders remain unchanged.</p>
+            <button disabled={busy} onClick={async () => {
+              if (await save(`/admin/promotions/${promotion.id}`, "DELETE")) setDeletePromotionId(null);
+            }}>Confirm delete promotion</button>
+            <button disabled={busy} onClick={() => setDeletePromotionId(null)}>Keep promotion</button>
+          </div> : <p><button disabled={busy} onClick={() => setDeletePromotionId(promotion.id)}>Delete promotion</button></p>}
         </details>)}
       </section>
     </>}
