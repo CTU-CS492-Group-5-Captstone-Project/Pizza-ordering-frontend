@@ -125,6 +125,13 @@ saved. Status updates do not send additional emails in this version."
 
 Save the order number so staff can identify this exact demo order.
 
+To demonstrate repeat ordering, open an order placed after migration `0005`
+and click **Re-order** in history or the order details. Its items are added to
+the existing cart at current prices and promotions; identical selections merge.
+Review the cart and use normal checkout to pay. Unavailable selections or a
+combined quantity over 99 reject the entire action without changing the cart.
+Older orders without saved selections show a menu link instead.
+
 ## 7. Process the order as staff
 
 **Sprint items: S1-T07, S2-T12/T13/T14**

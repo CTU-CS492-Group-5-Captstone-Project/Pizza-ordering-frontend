@@ -99,7 +99,7 @@ respected. Do not convey availability or errors by color alone.
 - `src/Menu.tsx`, `src/Promotions.tsx`: database menu/offers and resource states.
 - `src/Customize.tsx`, `src/Cart.tsx`: selections, add/update/remove, totals.
 - `src/Checkout.tsx`: review, profile prefill, hosted fields and safe retry/cancel.
-- `src/Orders.tsx`, `src/OrderSummary.tsx`: saved confirmations/history/totals.
+- `src/Orders.tsx`, `src/OrderSummary.tsx`: saved confirmations/history/totals and re-order into the existing cart at current prices. Orders predating saved selections cannot be automatically re-ordered.
 - `src/Staff.tsx`: polling queue and versioned transitions.
 - `src/Admin.tsx`: item/option/category/offer management and audit, including confirmed promotion deletion without changing saved orders.
 - `src/api.ts`, `src/useResource.ts`: typed API/CSRF, timeouts, loading/retry.
